@@ -1,5 +1,4 @@
 flask==2.3.3
-flask-mysql==1.5.2
 mysql-connector-python==8.4.0
 cryptography==42.0.8
 python-dotenv==1.0.1
