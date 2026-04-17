@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 import logging
 
-from api.backend.review import review_routes
+from backend.review.review_routes import review_routes
 from backend.db_connection import init_app as init_db
 from backend.attendee.attendee_routes import attendee_routes
 from backend.event.events_routes import events_routes
