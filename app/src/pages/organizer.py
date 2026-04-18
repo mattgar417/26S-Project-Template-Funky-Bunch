@@ -47,11 +47,6 @@ if st.button('View list of performers',
              use_container_width=True):
     st.switch_page('pages/get_performers.py')
 
-if st.button('View details of performer',
-             type='primary',
-             use_container_width=True):
-    st.switch_page('pages/get_performer.py')
-
 if st.button('Send booking request to performer',
              type='primary',
              use_container_width=True):
