@@ -12,24 +12,27 @@ API_URL = ""
 
 response = requests.get(API_URL)
 if response.status_code == 200:
-        performers = response.json()
+    performers = response.json()
 
-        filtered_response = requests.get(API_URL)
-        if filtered_response.status_code == 200:
-            filtered_performers = filtered_response.json()
+    filtered_response = requests.get(API_URL)
+    if filtered_response.status_code == 200:
+        filtered_performers = filtered_response.json()
 
-            # Display results count
-            st.write(f"Found {len(filtered_performers)} performers")
+        st.write(f"Found {len(filtered_performers)} performers")
 
-            # Create expandable rows for each NGO
-            for performer in filtered_performers:
-                    st.write(f"**Name:** {performer['FName']} {performer['LName']}")
-                    st.write(f"**Genre:** {performer['Genre']}")
-                    st.write(f"**Biography:** {performer['Bio']}")
-                    st.write(f"**Media Links:** {performer['MediaLinks']}")
-                    st.write(f"**Availability:** {performer['Genre']}")
-                    st.write(f"**Views:** {performer['Views']}")
-                    st.write(f"**Ranking:** {performer['Ranking']}")
+        for performer in filtered_performers:
+            st.write(f"**Name:** {performer['FName']} {performer['LName']}")
+            st.write(f"**Genre:** {performer['Genre']}")
+            st.write(f"**Biography:** {performer['Bio']}")
+            st.write(f"**Media Links:** {performer['MediaLinks']}")
+            st.write(f"**Availability:** {performer['Genre']}")
+            st.write(f"**Views:** {performer['Views']}")
+            st.write(f"**Ranking:** {performer['Ranking']}")
+            st.divider()
+
+    st.divider()
+    if st.button("Send booking request to performer", type="primary", use_container_width=True):
+        st.switch_page("pages/request_performer_booking.py")
 
 else:
     st.error("Failed to fetch venue data from the API")
