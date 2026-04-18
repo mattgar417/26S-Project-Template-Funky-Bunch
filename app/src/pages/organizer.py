@@ -27,7 +27,7 @@ if st.button('Delete event',
              use_container_width=True):
     st.switch_page('pages/delete_event.py')
 
-if st.button('View matched users for events',
+if st.button('View matched users for your events',
              type='primary',
              use_container_width=True):
     st.switch_page('pages/get_event_matches.py')
@@ -36,18 +36,22 @@ if st.button('View venues',
              type='primary',
              use_container_width=True):
     st.switch_page('pages/get_venues.py')
-
+ 
+''' Will be in venue directory instead
 if st.button('Post a request to a venue',
              type='primary',
              use_container_width=True):
     st.switch_page('pages/post_venue_request.py')
+'''
 
-if st.button('View list of performers',
+if st.button('View performers',
              type='primary',
              use_container_width=True):
     st.switch_page('pages/get_performers.py')
 
+''' Will be in performer directory instead
 if st.button('Send booking request to performer',
              type='primary',
              use_container_width=True):
     st.switch_page('pages/request_performer_booking.py')
+'''

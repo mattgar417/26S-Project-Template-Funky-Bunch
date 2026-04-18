@@ -29,7 +29,6 @@ with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
 
     # Required fields
     name = st.text_input("Name")
-    compensation = st.text_input("Compensation")
 
     submitted = st.form_submit_button("Add Request")
 
@@ -39,7 +38,6 @@ with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
         else:
             request_data = {
                 "Name": name,
-                "Compensation": compensation
             }
 
             try:
@@ -61,5 +59,5 @@ with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
 if st.session_state.show_success_modal:
     show_success_dialog(st.session_state.success_request_name)
 
-if st.button("Return to Performer Directory"):
-    st.switch_page("pages/get_performers.py")
+if st.button("Return to Venue Directory"):
+    st.switch_page("pages/get_venues.py")
