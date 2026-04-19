@@ -22,7 +22,7 @@ if st.button("Act as Sarah, an attendee",
     st.session_state['role'] = 'attendee'
     st.session_state['first_name'] = 'Sarah'
     logger.info("Logging in as an attendee")
-    st.switch_page('pages/attendee_home.py')
+    st.switch_page('pages/attendee.py')
 
 if st.button('Act as Jason, a venue owner',
              type='primary',

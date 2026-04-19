@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request, current_app
-from backend.db.connection import get_db
+from backend.db_connection import get_db
 from mysql.connector import Error
 
 #Create a Blueprint for Performer routes
-performer_routes = Blueprint('perofrmer_routes", __name__')
+performer_routes = Blueprint('performer_routes', __name__)
 
 #GET /performers
 #Returns a list of performers, optionally, filtered by genre and/or availability [Ron-5],[Caleb-1]
@@ -21,15 +21,17 @@ def get_all_performers():
             WHERE 1=1 
         """
         params = []
-        if genre: query += " AND Genre = %s"
-        params.append(genre)
-        if availability: query += " AND Availability LIKE %s"
-        params.append(f"%{availability}%")
+        if genre: 
+            query += " AND Genre = %s"
+            params.append(genre)
+        if availability: 
+            query += " AND Availability LIKE %s"
+            params.append(f"%{availability}%")
 
         query += " ORDER BY Ranking DESC"
 
         cursor.execute (query, params)
-        performers = cursor.fetcha11()
+        performers = cursor.fetchall()
         return jsonify(performers), 200
     except Error as e:
         current_app.logger.error(f"Database error in get_all_performers: {e}")
