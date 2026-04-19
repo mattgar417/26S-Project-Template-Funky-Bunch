@@ -44,4 +44,21 @@ try:
                     if st.button("RSVP", key=f"rsvp_{event['EventID']}"):
                         r = requests.post(f"{API_BASE}/attendee/attendees/{attendee_id}/rsvps", json={"EventID": event["EventID"], "status": "Going"},
                         )
-                        
+                        if r.status_code == 200:
+                            st.success("RSVP saved!")
+                        else:
+                            st.error(f"Failed: {r.text}")
+                with b2:
+                    if st.button("⭐ Favorite", key=f"fav_{event['EventID']}"):
+                        r = requests.post(
+                            f"{API_BASE}/attendee/attendees/{attendee_id}/favorites",
+                            json={"event_id": event["EventID"]},
+                        )
+                        if r.status_code == 200:
+                            st.success("Added to favorites!")
+                        else:
+                            st.warning(r.json().get("message", "Failed"))
+    else:
+        st.error(f"API error: {response.status_code}")
+except requests.exceptions.RequestException as e:
+    st.error(f"Error connecting to API: {e}")
