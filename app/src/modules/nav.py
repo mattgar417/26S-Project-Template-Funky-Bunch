@@ -50,6 +50,20 @@ def classification_nav():
 
 # ---- Role: attendee ------------------------------------------------
 
+def attendee_home_nav():
+    st.sidebar.page_link("pages/attendee.py", label="Attendee Home", icon="🏠")
+
+def view_events_nav():
+    st.sidebar.page_link("pages/view_events.py", label="Browse Events", icon="🔎")
+
+def view_feed_nav():
+    st.sidebar.page_link("pages/view_feed.py", label="My Feed", icon="📰")
+
+def view_attendee_events_nav():
+    st.sidebar.page_link("pages/view_attendee_events.py", label="My RSVPs", icon="📅")
+
+def view_events_list_nav():
+    st.sidebar.page_link("pages/view_events_list.py", label="Saved Events", icon="⭐")
 
 #---- Role: performer ------------------------------------------------
 
