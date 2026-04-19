@@ -8,7 +8,7 @@ SideBarLinks()
 
 st.title("Attendees that Match with Your Event")
 
-API_URL = "" 
+API_URL = f"http://api:4000/events/{st.session_state.event_id}/"
 
 response = requests.get(API_URL)
 

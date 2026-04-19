@@ -22,7 +22,7 @@ if st.session_state.reset_form:
     st.session_state.form_key_counter += 1
     st.session_state.reset_form = False
 
-API_URL = ""
+API_URL = f"http://api:4000/events/{st.session_state.event_id}"
 
 event_id = st.number_input("Enter Event ID to Update", min_value=1, step=1)
 fetch_clicked = st.button("Fetch Event Details")
