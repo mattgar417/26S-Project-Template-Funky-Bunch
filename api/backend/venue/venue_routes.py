@@ -123,47 +123,32 @@ def get_organizer_history(org_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-<<<<<<< HEAD
         cursor.close()
 
+# --- 6. GET SPECIFIC ORGANIZER PROFILE & HISTORY ---
 @venue_routes.route("/organizers/<int:org_id>/history", methods=["GET"])
 def get_organizer_history(org_id):
     cursor = get_db().cursor(dictionary=True)
     try:
-        query = """
-            SELECT e.Date, e.Name AS EventName, e.Size AS Attendance
-            FROM Requests r
-            JOIN Event e ON r.RequestName = e.Name
-            WHERE r.OrganizerID = %s AND r.Status = 'Approved'
-            ORDER BY e.Date DESC
-        """
-        cursor.execute(query, (org_id,))
-        return jsonify(cursor.fetchall()), 200
-    except Error as e:
+        # 1. Get basic Organizer info
+        cursor.execute("SELECT FName as FirstName, LName as LastName, Email FROM Organizer WHERE OrganizerID = %s", (org_id,))
+        organizer = cursor.fetchone()
+
+        # 2. Get their history of requests at your venues
+        cursor.execute("""
+            SELECT RequestName, Status, Date 
+            FROM Requests 
+            WHERE OrganizerID = %s 
+            ORDER BY Date DESC
+        """, (org_id,))
+        history = cursor.fetchall()
+
+        return jsonify({
+            "organizer": organizer if organizer else {"FirstName": "Unknown", "LastName": "", "Email": "N/A"},
+            "history": history
+        }), 200
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
 
-@venue_routes.route('/venues/<venue_id>/revenue', methods=['GET'])
-def get_venue_revenue(venue_id):
-    # This query sums up the 'Price' of all 'Approved' requests for the venue
-    # It groups them by week so Streamlit can draw the line chart
-    query = f'''
-        SELECT 
-            CONCAT('Week ', WEEK(Date)) as week,
-            SUM(Price) as amount
-        FROM Bookings
-        WHERE VenueID = {venue_id} AND Status = 'Approved'
-        GROUP BY week
-        ORDER BY week ASC
-    '''
-    
-    cursor = db.get_db().cursor()
-    cursor.execute(query)
-    column_names = [column[0] for column in cursor.description]
-    data = [dict(zip(column_names, row)) for row in cursor.fetchall()]
-    
-    return jsonify(data)
-=======
-        cursor.close()
->>>>>>> 91b855d (Merge remote changes)
