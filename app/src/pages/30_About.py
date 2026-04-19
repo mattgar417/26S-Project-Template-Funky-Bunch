@@ -4,6 +4,9 @@ from modules.nav import SideBarLinks
 st.set_page_config(layout='wide')
 SideBarLinks()
 
+if st.button("Home"):
+    st.switch_page("Home")
+
 st.title("About communevent")
 
 st.write("""
