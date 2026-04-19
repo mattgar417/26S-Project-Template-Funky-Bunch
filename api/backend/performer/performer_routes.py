@@ -24,7 +24,7 @@ def get_all_performers():
         if genre: query += " AND Genre = %s"
         params.append(genre)
         if availability: query += " AND Availability LIKE %s"
-        params.append(f"%{availanility}%")
+        params.append(f"%{availability}%")
 
         query += " ORDER BY Ranking DESC"
 
