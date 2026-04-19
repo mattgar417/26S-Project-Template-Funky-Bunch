@@ -16,12 +16,14 @@ services:
     container_name: web-api
     hostname: web-api
     volumes: ["./api:/apicode"]
+    env_file:
+      - ./api/.env
     environment:
       - WATCHPACK_POLLING=true
     ports:
       - 4000:4000
 
-  db:
+  mysql_db:
     env_file:
       - ./api/.env
     image: mysql:9

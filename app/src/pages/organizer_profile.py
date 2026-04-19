@@ -2,12 +2,11 @@ import streamlit as st
 import requests
 
 st.set_page_config(layout='wide')
-
-VENUE_ID = 1
-BASE_URL = "http://api:4000/venue"
 org_id = st.session_state.get('selected_org_id', 1)
 
-st.title("👤 Organizer Profile")
+st.title(f"👤 Organizer Profile (ID: {org_id})")
+VENUE_ID = 1
+BASE_URL = "http://api:4000/venue"
 
 # --- DATA FETCHING WITH FALLBACK ---
 try:
@@ -37,6 +36,15 @@ with col1:
     if st.button("⬅️ Back to Dashboard"):
         st.session_state['menu_choice'] = "Manage Requests"
         st.switch_page("venue_owner.py")
+    
+    elif menu_choice == "Organizer Profile":
+        org_id = st.session_state.get('selected_org_id', 1)
+    
+    if st.button("⬅️ Back to Requests"):
+        st.session_state['menu_choice'] = "Manage Requests"
+        st.rerun()
+        
+    st.title(f"👤 Organizer Profile")
 
 with col2:
     st.subheader("Booking History at Your Venue")
@@ -47,3 +55,4 @@ with col2:
                 st.write(f"**Status:** {event.get('Status', 'Unknown')}")
     else:
         st.info("No past bookings found for this organizer.")
+

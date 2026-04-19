@@ -59,7 +59,8 @@ CREATE TABLE Event (
 CREATE TABLE Requests (
    RequestID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
    RequestName VARCHAR(255),
-   Status VARCHAR(255),
+   Status VARCHAR(255) DEFAULT 'Pending',
+   Date DATE,  -- Added this to track the event date
    OrganizerID INT NOT NULL,
    VenueID INT NOT NULL,
    INDEX(OrganizerID),

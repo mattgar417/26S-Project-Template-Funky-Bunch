@@ -27,11 +27,12 @@ def create_app():
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
     # Database connection settings — values come from the .env file.
-    app.config["MYSQL_DATABASE_USER"] = os.getenv("DB_USER").strip()
-    app.config["MYSQL_DATABASE_PASSWORD"] = os.getenv("MYSQL_ROOT_PASSWORD").strip()
-    app.config["MYSQL_DATABASE_HOST"] = os.getenv("DB_HOST").strip()
-    app.config["MYSQL_DATABASE_PORT"] = int(os.getenv("DB_PORT").strip())
-    app.config["MYSQL_DATABASE_DB"] = os.getenv("DB_NAME").strip()
+    # Database connection settings — with fallbacks to match your env values
+    app.config["MYSQL_DATABASE_USER"] = os.getenv("DB_USER", "root").strip()
+    app.config["MYSQL_DATABASE_PASSWORD"] = os.getenv("MYSQL_ROOT_PASSWORD", "3306").strip()
+    app.config["MYSQL_DATABASE_HOST"] = os.getenv("DB_HOST", "db").strip()
+    app.config["MYSQL_DATABASE_PORT"] = int(os.getenv("DB_PORT", "3306").strip())
+    app.config["MYSQL_DATABASE_DB"] = os.getenv("DB_NAME", "CommunEvent").strip()
 
     # Register the cleanup hook for the database connection.
     app.logger.info("create_app(): initializing database connection")
