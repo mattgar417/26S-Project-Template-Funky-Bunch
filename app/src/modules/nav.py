@@ -100,7 +100,12 @@ def SideBarLinks(show_home=False):
             world_bank_viz_nav()
             map_demo_nav()
 
-        #if st.session_state["role"] == "attendee":
+        if st.session_state["role"] == "attendee":
+            attendee_home_nav()
+            view_events_nav()
+            view_feed_nav()
+            view_attendee_events_nav()
+            view_events_list_nav()
            
         #if st.session_state["role"] == "performer":
           
