@@ -147,7 +147,10 @@ elif menu_choice == "Venue Revenue":
             raise Exception("API Error")
 
     except:
+<<<<<<< HEAD
         # 2. FALLBACK: Mock Data if SQL/API is unreachable
+=======
+>>>>>>> 2b3c715 (Integrated Venue Owner and Organizer UI pages)
         st.warning("⚠️ Showing Simulated Revenue Data")
         df = pd.DataFrame({
             'week': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
@@ -166,7 +169,10 @@ elif menu_choice == "Venue Revenue":
     st.write("### Weekly Breakdown")
     # Display the line chart using the dataframe
     st.line_chart(data=df, x='week', y='amount')
+<<<<<<< HEAD
 
     # Display the raw data table for transparency
+=======
+>>>>>>> 2b3c715 (Integrated Venue Owner and Organizer UI pages)
     with st.expander("See Raw Transaction Data"):
         st.table(df)
