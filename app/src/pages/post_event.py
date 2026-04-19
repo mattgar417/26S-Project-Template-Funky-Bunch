@@ -22,7 +22,7 @@ if st.session_state.reset_form:
     st.session_state.form_key_counter += 1
     st.session_state.reset_form = False
 
-API_URL = ""
+API_URL = f"http://api:4000/events/{st.session_state.event_id}"
 
 with st.form(f"add_event_form_{st.session_state.form_key_counter}"):
     st.subheader("Event Information")

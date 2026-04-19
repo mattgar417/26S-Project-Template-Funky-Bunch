@@ -22,7 +22,7 @@ if st.session_state.reset_form:
     st.session_state.form_key_counter += 1
     st.session_state.reset_form = False
 
-API_URL = ""
+API_URL = f"http://api:4000/organizers/{st.session_state.organizer_id}/performer-bookings"
 
 with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
     st.subheader("Request Information")

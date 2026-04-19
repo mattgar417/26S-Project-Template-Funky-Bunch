@@ -17,7 +17,7 @@ def show_success_dialog(event_name):
         st.session_state.success_event_name = ""
         st.rerun()
 
-API_URL = ""
+API_URL = f"http://api:4000/events/{st.session_state.event_id}"
 
 event_id = st.number_input("Enter Event ID to Delete", min_value=1, step=1)
 fetch_clicked = st.button("Fetch Event Details")
