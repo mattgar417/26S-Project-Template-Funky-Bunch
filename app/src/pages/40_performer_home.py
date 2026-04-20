@@ -14,12 +14,12 @@ st.write('### What would you like to do today?')
 if st.button('My Profile',
              type='primary',
              use_container_width=True):
-    st.switch_page('pages/41_Performer_Profile.py')
- 
+    st.switch_page('pages/41_performer_profile.py')
+
 if st.button('My Booking Requests',
              type='primary',
              use_container_width=True):
-    st.switch_page('pages/42_Performer_Bookings.py')
+    st.switch_page('pages/42_performer_bookings.py')
  
 if st.button('My Upcoming Performances',
              type='primary',
