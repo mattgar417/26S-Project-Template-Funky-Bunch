@@ -19,7 +19,7 @@ st.title("Add New Request")
 
 @st.dialog("Success")
 def show_success_dialog(request_name):
-    st.markdown(f"### {request_name} has been successfully added to the system!")
+    st.markdown(f"### You sent a booking request to {request_name}")
     st.session_state.show_success_modal = False
     
     if st.button("Add Another Request", use_container_width=True):
@@ -69,6 +69,8 @@ with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
                     "request_name": name,
                     "venue_id": venue_id
                 }
+
+                st.session_state.success_venue_name = name
 
                 response = requests.post(f"{API_URL}/organizer/organizers/{organizer_id}/venue-requests", json=request_data)
 
