@@ -12,7 +12,7 @@ def home_nav():
 
 
 def about_page_nav():
-    st.sidebar.page_link("pages/30_About.py", label="About", icon="🧠")
+    st.sidebar.page_link("pages/about.py", label="About", icon="🧠")
 
 
 
@@ -67,11 +67,62 @@ def view_events_list_nav():
 
 #---- Role: performer ------------------------------------------------
 
+def performer_home_nav():
+    st.sidebar.page_link("pages/40_performer_home.py", label="Performer Home", icon="🏠")
+
+def performer_profile_nav():
+    st.sidebar.page_link("pages/41_performer_profile.py", label="My Profile", icon="👤")
+
+def performer_bookings_nav():
+    st.sidebar.page_link("pages/42_performer_bookings.py", label="My Bookings", icon="📋")
+
+def performer_performances_nav():
+    st.sidebar.page_link("pages/43_Performer_Performances.py", label="My Performances", icon="🎤")
+
 
 #---- Role: organizer ------------------------------------------------
 
+def organizer_home_nav():
+    st.sidebar.page_link("pages/organizer.py", label="Organizer Home", icon="🏠")
+
+def organizer_profile_nav():
+    st.sidebar.page_link("pages/organizer_profile.py", label="My Profile", icon="👤")
+
+def post_event_nav():
+    st.sidebar.page_link("pages/post_event.py", label="Post Event", icon="➕")
+
+def update_event_nav():
+    st.sidebar.page_link("pages/update_event.py", label="Update Event", icon="✏️")
+
+def delete_event_nav():
+    st.sidebar.page_link("pages/delete_event.py", label="Delete Event", icon="🗑️")
+
+def get_event_matches_nav():
+    st.sidebar.page_link("pages/get_event_matches.py", label="Event Matches", icon="🔗")
+
+def get_performers_nav():
+    st.sidebar.page_link("pages/get_performers.py", label="Browse Performers", icon="🎭")
+
+def request_performer_booking_nav():
+    st.sidebar.page_link("pages/request_performer_booking.py", label="Book Performer", icon="📩")
+
 
 # ---- Role: Venue Owner ------------------------------------------------
+
+def venue_owner_home_nav():
+    st.sidebar.page_link("pages/venue_owner.py", label="Venue Owner Home", icon="🏠")
+
+def owner_nav():
+    st.sidebar.page_link("pages/owner.py", label="My Venues", icon="🏟️")
+
+def get_venues_nav():
+    st.sidebar.page_link("pages/get_venues.py", label="Browse Venues", icon="🔎")
+
+def post_venue_request_nav():
+    st.sidebar.page_link("pages/post_venue_request.py", label="Post Venue Request", icon="➕")
+
+def view_request_nav():
+    st.sidebar.page_link("pages/view_request.py", label="View Requests", icon="📋")
 
 
 # ---- Sidebar assembly -------------------------------------------------------
@@ -107,12 +158,28 @@ def SideBarLinks(show_home=False):
             view_attendee_events_nav()
             view_events_list_nav()
            
-        #if st.session_state["role"] == "performer":
-          
-        #if st.session_state["role"] == "organizer":
-            
-            
-        #if st.session_state["role"] == "venue_owner":
+        if st.session_state["role"] == "performer":
+            performer_home_nav()
+            performer_profile_nav()
+            performer_bookings_nav()
+            performer_performances_nav()
+
+        if st.session_state["role"] == "organizer":
+            organizer_home_nav()
+            organizer_profile_nav()
+            post_event_nav()
+            update_event_nav()
+            delete_event_nav()
+            get_event_matches_nav()
+            get_performers_nav()
+            request_performer_booking_nav()
+
+        if st.session_state["role"] == "venue_owner":
+            venue_owner_home_nav()
+            owner_nav()
+            get_venues_nav()
+            post_venue_request_nav()
+            view_request_nav()
          
 
     # About link appears at the bottom for all roles
