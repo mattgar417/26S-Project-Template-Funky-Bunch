@@ -6,56 +6,78 @@ st.set_page_config(layout='wide')
 
 SideBarLinks()
 
+if "reset_form" not in st.session_state:
+    st.session_state.reset_form = False
+if "form_key_counter" not in st.session_state:
+    st.session_state.form_key_counter = 0
+if "show_success_modal" not in st.session_state:
+    st.session_state.show_success_modal = False
+if "success_event_name" not in st.session_state:
+    st.session_state.success_event_name = ""
+
 st.title("Update Event")
 
-organizer_id = st.session_state.get('user_id', 1)
-BASE_URL = "http://web-api:4000/event/events"
+@st.dialog("Success")
+def show_success_dialog(event_name):
+    st.markdown(f"### {event_name} has been updated!")
+    st.session_state.show_success_modal = False
+    
+    if st.button("Update Event Again", use_container_width=True):
+            st.session_state.success_event_name = ""
+            st.session_state.reset_form = True
+            st.rerun()
 
-# Fetch organizer's events for selection
-events_res = requests.get(f"http://web-api:4000/organizer/organizers/{organizer_id}/events", timeout=5)
-if events_res.status_code == 200:
-    events = events_res.json()
-else:
-    events = []
+if st.session_state.reset_form:
+    st.session_state.form_key_counter += 1
+    st.session_state.reset_form = False
 
-if not events:
-    st.info("You have no events to update.")
-    st.stop()
+API_URL = f"http://api:4000"
+organizer_id = st.session_state.get("organizer_id", 4)
 
-event_options = {f"{e['Name']} (ID {e['EventID']})": e['EventID'] for e in events}
-selected_label = st.selectbox("Select an event to update", list(event_options.keys()))
-event_id = event_options[selected_label]
+event_name = st.text_input("Enter Event Name to Update")
+fetch_clicked = st.button("Fetch Event Details")
 
-# Load current event data
-if st.button("Load Event Details"):
+if fetch_clicked:
     try:
-        res = requests.get(f"{BASE_URL}/{event_id}", timeout=5)
-        if res.status_code == 200:
-            st.session_state['edit_event'] = res.json()
-            st.success("Event loaded. Edit the fields below.")
-        else:
-            st.error("Could not load event details.")
-    except Exception as e:
-        st.error(f"API error: {e}")
+        response = requests.get(f"{API_URL}/event/events")
+        if response.status_code == 200:
+            events = response.json()
+            match = next(
+                (e for e in events if e.get("Name", "").lower() == event_name.strip().lower()),
+                None
+            )
+            if match:
+                st.session_state.fetched_event = match
+                st.session_state.fetched_event_id = match.get("EventID")
+                st.success(f"Event found! You may now edit the fields below.")
+            else:
+                st.error("No event found with that name. Please check and try again.")
+                st.session_state.fetched_event = None
+                st.session_state.fetched_event_id = None
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error connecting to the API: {str(e)}")
+        st.session_state.fetched_event = None
 
-event = st.session_state.get('edit_event', {})
+event = st.session_state.get("fetched_event") or {}
 
-with st.form("update_event_form"):
-    st.subheader("Edit Event Details")
-    name = st.text_input("Name", value=event.get('Name', ''))
-    date = st.text_input("Date (YYYY-MM-DD HH:MM:SS)", value=str(event.get('Date', '')))
-    location = st.text_input("Location", value=event.get('Location', ''))
-    description = st.text_area("Description", value=event.get('Description', ''))
-    size = st.number_input("Size", min_value=1, value=int(event.get('Size', 1)))
-    category = st.text_input("Category", value=event.get('Category', ''))
+with st.form(f"add_event_form_{st.session_state.form_key_counter}"):
+    st.subheader("Updated Event Information")
 
-    submitted = st.form_submit_button("Save Changes")
+    # Required fields
+    name = st.text_input("New Name")
+    date = st.text_input("New Date")
+    location = st.text_input("New Location")
+    description = st.text_input("New Description")
+    size = st.text_input("New Size")
+    category = st.text_input("New Category")
+
+    submitted = st.form_submit_button("Update Event")
 
     if submitted:
-        if not all([name, date, location, description, category]):
-            st.error("Please fill in all required fields.")
+        if not all([name, date, location, description, size, category]):
+            st.error("Please fill in all required fields")
         else:
-            payload = {
+            event_data = {
                 "Name": name,
                 "Date": date,
                 "Location": location,
@@ -63,15 +85,29 @@ with st.form("update_event_form"):
                 "Size": size,
                 "Category": category
             }
-            try:
-                response = requests.put(f"{BASE_URL}/{event_id}", json=payload, timeout=5)
-                if response.status_code == 200:
-                    st.success(f"Event **{name}** updated successfully!")
-                    st.session_state.pop('edit_event', None)
-                else:
-                    st.error(f"Failed to update event: {response.json().get('error', 'Unknown error')}")
-            except requests.exceptions.RequestException as e:
-                st.error(f"Error connecting to the API: {e}")
+            event_id = st.session_state.fetched_event_id
 
-if st.button("Return to Organizer Home"):
+            try:
+                response = requests.put(f"{API_URL}/event/events/{event_id}", json=event_data)
+
+                st.write("Status code:", response.status_code)
+                st.write("Response body:", response.json())
+
+                if response.status_code == 200:
+                    st.session_state.show_success_modal = True
+                    st.session_state.success_ngo_name = name
+                    st.rerun()
+                else:
+                    st.error(
+                        f"Failed to add event: {response.json().get('error', 'Unknown error')}"
+                    )
+
+            except requests.exceptions.RequestException as e:
+                st.error(f"Error connecting to the API: {str(e)}")
+                st.info("Please ensure the API server is running")
+
+if st.session_state.show_success_modal:
+    show_success_dialog(st.session_state.success_event_name)
+
+if st.button("Return to Organizer Page"):
     st.switch_page("pages/organizer.py")

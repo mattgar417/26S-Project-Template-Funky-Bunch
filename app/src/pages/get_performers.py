@@ -8,31 +8,33 @@ SideBarLinks()
 
 st.title("Performer Directory")
 
-BASE_URL = "http://web-api:4000/performer/performers"
+organizer_id = st.session_state.get("organizer_id", 1)
 
-genre_filter = st.text_input("Filter by Genre (optional)")
+API_URL = f"http://api:4000/performer/performers"
 
-params = {}
-if genre_filter:
-    params["genre"] = genre_filter
-
-response = requests.get(BASE_URL, params=params)
+response = requests.get(API_URL)
 if response.status_code == 200:
     performers = response.json()
 
-    st.write(f"Found {len(performers)} performers")
+    filtered_response = requests.get(API_URL)
+    if filtered_response.status_code == 200:
+        filtered_performers = filtered_response.json()
 
-    for performer in performers:
-        with st.expander(f"**{performer['FName']} {performer['LName']}** — {performer['Genre']}"):
+        st.write(f"Found {len(filtered_performers)} performers")
+
+        for performer in filtered_performers:
+            st.write(f"**Name:** {performer['FName']} {performer['LName']}")
             st.write(f"**Genre:** {performer['Genre']}")
             st.write(f"**Biography:** {performer['Bio']}")
             st.write(f"**Media Links:** {performer['MediaLinks']}")
-            st.write(f"**Availability:** {performer['Availability']}")
+            st.write(f"**Availability:** {performer['Genre']}")
             st.write(f"**Views:** {performer['Views']}")
             st.write(f"**Ranking:** {performer['Ranking']}")
-            if st.button("Book this Performer", key=f"book_{performer['PerformerID']}"):
-                st.session_state['selected_performer_id'] = performer['PerformerID']
-                st.session_state['selected_performer_name'] = f"{performer['FName']} {performer['LName']}"
-                st.switch_page("pages/request_performer_booking.py")
+            st.divider()
+
+    st.divider()
+    if st.button("Send booking request to performer", type="primary", use_container_width=True):
+        st.switch_page("pages/request_performer_booking.py")
+
 else:
-    st.error("Failed to fetch performers from the API")
+    st.error("Failed to fetch venue data from the API")

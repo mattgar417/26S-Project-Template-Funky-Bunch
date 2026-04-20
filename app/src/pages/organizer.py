@@ -12,6 +12,11 @@ SideBarLinks()
 st.title(f"Welcome event organizer, {st.session_state['first_name']}.")
 st.write('### Dashboard:')
 
+if st.button('View your events',
+             type='primary',
+             use_container_width=True):
+    st.switch_page('pages/get_events.py')
+
 if st.button('Post a new event',
              type='primary',
              use_container_width=True):
@@ -26,11 +31,6 @@ if st.button('Delete event',
              type='primary',
              use_container_width=True):
     st.switch_page('pages/delete_event.py')
-
-if st.button('View matched users for your events',
-             type='primary',
-             use_container_width=True):
-    st.switch_page('pages/get_event_matches.py')
 
 if st.button('View venues',
              type='primary',
