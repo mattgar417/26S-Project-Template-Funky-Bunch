@@ -5,6 +5,21 @@ from mysql.connector import Error
 # Create a Blueprint for Attendee routes
 attendee_routes = Blueprint("attendee_routes", __name__)
 
+# GET /attendee/attendees
+# Returns all attendees for the login selector
+@attendee_routes.route("/attendees", methods=["GET"])
+def get_all_attendees():
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT AttendeeID, FName, LName FROM Attendee ORDER BY FName, LName")
+        attendees = cursor.fetchall()
+        return jsonify(attendees), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_attendees: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
 # GET /attendee/attendees/<id>/feed
 # Returns personalized event feed based on attendee's interests + location [Sarah-1]
 @attendee_routes.route("/attendees/<int:attendee_id>/feed", methods=["GET"])
