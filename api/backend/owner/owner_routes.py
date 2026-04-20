@@ -2,11 +2,27 @@ from flask import Blueprint, jsonify, request, current_app
 from backend.db_connection import get_db
 from mysql.connector import Error
 
-# Create a Blueprint for Venue routes
+# Create a Blueprint for Venue/Owner routes
+# We use "owner" as the name to match your app.register_blueprint call
 venue_routes = Blueprint("owner", __name__)
 
-# --- 1. GET ALL VENUES ---
-# Returns all venues and their owner details for administrative overview
+# --- 1. GET ALL OWNERS ---
+# Returns all owners for the login selector [Required for your login page]
+@venue_routes.route("/owners", methods=["GET"])
+def get_all_owners():
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT OwnerID, FName, LName FROM Owner ORDER BY FName, LName")
+        owners = cursor.fetchall()
+        return jsonify(owners), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_owners: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# --- 2. GET ALL VENUES ---
+# Returns all venues and their owner details
 @venue_routes.route("/venues", methods=["GET"])
 def get_venues():
     cursor = get_db().cursor(dictionary=True)
@@ -25,8 +41,7 @@ def get_venues():
     finally:
         cursor.close()
 
-# --- 2. GET ALL REQUESTS FOR A SPECIFIC VENUE ---
-# Returns booking requests for a specific venue [Jason-1]
+# --- 3. GET ALL REQUESTS FOR A SPECIFIC VENUE ---
 @venue_routes.route("/venues/<int:venue_id>/requests", methods=["GET"])
 def get_venue_requests(venue_id):
     cursor = get_db().cursor(dictionary=True)
@@ -54,8 +69,7 @@ def get_venue_requests(venue_id):
     finally:
         cursor.close()
 
-# --- 3. UPDATE REQUEST STATUS ---
-# Allows for the approval or rejection of specific venue requests [Jason-5]
+# --- 4. UPDATE REQUEST STATUS ---
 @venue_routes.route("/venues/<int:venue_id>/requests/<int:request_id>", methods=["PUT"])
 def update_venue_request_status(venue_id, request_id):
     db = get_db()
@@ -77,8 +91,7 @@ def update_venue_request_status(venue_id, request_id):
     finally:
         cursor.close()
 
-# --- 4. VENUE CALENDAR ---
-# Returns a schedule of events hosted at the venue to prevent double-booking [Jason-2]
+# --- 5. VENUE CALENDAR ---
 @venue_routes.route("/venues/<int:venue_id>/calendar", methods=["GET"])
 def get_venue_calendar(venue_id):
     cursor = get_db().cursor(dictionary=True)
@@ -99,12 +112,12 @@ def get_venue_calendar(venue_id):
     finally:
         cursor.close()
 
-# --- 5. VENUE REVENUE ---
-# Calculates revenue trends for the venue based on approved bookings [Jason-6]
+# --- 6. VENUE REVENUE ---
 @venue_routes.route("/venues/<int:venue_id>/revenue", methods=["GET"])
 def get_venue_revenue(venue_id):
     cursor = get_db().cursor(dictionary=True)
     try:
+        # Note: We group by the specific date to show the timeline
         query = """
             SELECT 
                 DATE_FORMAT(Date, '%Y-%m-%d') as week, 
@@ -123,13 +136,11 @@ def get_venue_revenue(venue_id):
     finally:
         cursor.close()
 
-# --- 6. GET ORGANIZER HISTORY ---
-# Provides a profile and history of organizers to ensure reliability [Jason-4]
+# --- 7. GET ORGANIZER HISTORY ---
 @venue_routes.route("/organizers/<int:org_id>/history", methods=["GET"])
 def get_organizer_history(org_id):
     cursor = get_db().cursor(dictionary=True)
     try:
-        # Get Organizer profile info
         cursor.execute("""
             SELECT FName AS FirstName, LName AS LastName, Email 
             FROM Organizer 
@@ -137,7 +148,6 @@ def get_organizer_history(org_id):
         """, (org_id,))
         organizer = cursor.fetchone()
 
-        # Get their request history
         cursor.execute("""
             SELECT RequestName, Status, Date 
             FROM Requests 
@@ -155,3 +165,4 @@ def get_organizer_history(org_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
+        

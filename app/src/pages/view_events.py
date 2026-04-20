@@ -1,4 +1,4 @@
-import streamlist as st
+import streamlit as st
 import requests
 from modules.nav import SideBarLinks
 
@@ -41,9 +41,13 @@ try:
 
                 b1, b2 = st.columns(2)
                 with b1:
-                    if st.button("RSVP", key=f"rsvp_{event['EventID']}"):
-                        r = requests.post(f"{API_BASE}/attendee/attendees/{attendee_id}/rsvps", json={"EventID": event["EventID"], "status": "Going"},
-                        )
+                    if st.button("RSVP (Going)", key=f"rsvp_{event['EventID']}"):
+                        payload = {"event_id": event["EventID"], "status": "Going"}
+                        st.write(f"DEBUG sending: {payload}")
+                        st.write(f"DEBUG URL: {API_BASE}/attendee/attendees/{attendee_id}/rsvps")
+                        r = requests.post(f"{API_BASE}/attendee/attendees/{attendee_id}/rsvps", json=payload,)
+                        st.write(f"DEBUG response status: {r.status_code}")
+                        st.write(f"DEBUG response: {r.text}")
                         if r.status_code == 200:
                             st.success("RSVP saved!")
                         else:

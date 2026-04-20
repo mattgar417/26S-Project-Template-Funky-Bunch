@@ -6,60 +6,57 @@ st.set_page_config(layout='wide')
 
 SideBarLinks()
 
-st.title("Add New Request")
+st.title("Book a Performer")
 
-@st.dialog("Success")
-def show_success_dialog(request_name):
-    st.markdown(f"### {request_name} has been successfully added to the system!")
-    
-    if st.button("Add Another Request", use_container_width=True):
-            st.session_state.show_success_modal = False
-            st.session_state.success_request_name = ""
-            st.session_state.reset_form = True
-            st.rerun()
+performer_id = st.session_state.get('selected_performer_id')
+performer_name = st.session_state.get('selected_performer_name', 'Selected Performer')
+organizer_id = st.session_state.get('user_id', 1)
 
-if st.session_state.reset_form:
-    st.session_state.form_key_counter += 1
-    st.session_state.reset_form = False
+if not performer_id:
+    st.warning("No performer selected. Please go back and choose one.")
+    if st.button("Back to Performer Directory"):
+        st.switch_page("pages/get_performers.py")
+    st.stop()
 
-API_URL = f"http://api:4000/organizers/{st.session_state.organizer_id}/performer-bookings"
+st.subheader(f"Sending booking request to: **{performer_name}**")
 
-with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
-    st.subheader("Request Information")
+@st.dialog("Booking Sent!")
+def show_success_dialog(name):
+    st.markdown(f"### Your booking request to **{name}** was submitted successfully!")
+    if st.button("Book Another Performer", use_container_width=True):
+        st.session_state.pop('selected_performer_id', None)
+        st.session_state.pop('selected_performer_name', None)
+        st.rerun()
 
-    # Required fields
-    name = st.text_input("Name")
-    compensation = st.text_input("Compensation")
+if 'booking_success' not in st.session_state:
+    st.session_state['booking_success'] = False
 
-    submitted = st.form_submit_button("Add Request")
+with st.form("booking_form"):
+    compensation = st.number_input("Compensation Offer ($)", min_value=0.0, step=50.0, format="%.2f")
+    submitted = st.form_submit_button("Send Booking Request")
 
     if submitted:
-        if not all([name]):
-            st.error("Please fill in all required fields marked with *")
+        if compensation <= 0:
+            st.error("Please enter a compensation amount greater than $0.")
         else:
-            request_data = {
-                "Name": name,
-                "Compensation": compensation
+            payload = {
+                "organizer_id": organizer_id,
+                "compensation": compensation,
+                "status": "Pending"
             }
-
             try:
-                response = requests.post(API_URL, json=request_data)
-
+                url = f"http://web-api:4000/performer/performers/{performer_id}/bookings"
+                response = requests.post(url, json=payload)
                 if response.status_code == 201:
-                    st.session_state.show_success_modal = True
-                    st.session_state.success_ngo_name = name
+                    st.session_state['booking_success'] = True
                     st.rerun()
                 else:
-                    st.error(
-                        f"Failed to add request: {response.json().get('error', 'Unknown error')}"
-                    )
-
+                    st.error(f"Failed to send request: {response.json().get('error', 'Unknown error')}")
             except requests.exceptions.RequestException as e:
                 st.error(f"Error connecting to the API: {str(e)}")
-                st.info("Please ensure the API server is running")
 
-if st.session_state.show_success_modal:
-    show_success_dialog(st.session_state.success_request_name)
+if st.session_state['booking_success']:
+    show_success_dialog(performer_name)
 
-if st.button("Return to Performer Directory"):
+if st.button("Back to Performer Directory"):
     st.switch_page("pages/get_performers.py")
