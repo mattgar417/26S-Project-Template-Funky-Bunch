@@ -3,7 +3,7 @@ from backend.db_connection import get_db
 from mysql.connector import Error
 
 # Create a Blueprint for Venue routes
-venue_routes = Blueprint("venue_routes", __name__)
+venue_routes = Blueprint("owner", __name__)
 
 # --- 1. GET ALL VENUES ---
 # Returns all venues and their owner details for administrative overview

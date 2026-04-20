@@ -2,6 +2,7 @@ USE `CommunEvent`;
 
 -- Owner (35 rows)
 INSERT INTO Owner (FName, LName, DOB, Email) VALUES
+('Jason', 'Bourne', 'jason.bourne@events.com,','1970-01-01', 'jason.bourne@events.com'),
 ('Margaret', 'Holloway', '1975-04-12', 'margaret.holloway@email.com'),
 ('Carlos', 'Reyes', '1982-09-28', 'carlos.reyes@email.com'),
 ('Linda', 'Nakamura', '1968-11-03', 'linda.nakamura@email.com'),
@@ -133,7 +134,7 @@ INSERT INTO Venue (Name, Capacity, Location, OwnerID) VALUES
 ('Bernstein Black Box', 130, 'Cambridge, MA', 13),
 ('Tran Pavilion', 900, 'Quincy, MA', 14),
 ('O''Brien''s Live', 220, 'Allston, MA', 15),
-('Chakraborty Event Loft', 160, 'Fenway, MA', 16),
+('Chakraborty Event Loft', 160, 'Fenway, MA', 1),
 ('Rosenberg Amphitheater', 1200, 'Boston, MA', 17),
 ('MacLeod Social Club', 280, 'Dorchester, MA', 18),
 ('Ferreira Banquet Hall', 400, 'Newton, MA', 19),
@@ -236,71 +237,6 @@ INSERT INTO Attendee (FName, LName, Email, DOB, Location) VALUES
 ('Nkechi', 'Obi', 'nkechi.obi@email.com', '1995-07-12', 'Roxbury, MA'),
 ('Austin', 'Larson', 'austin.larson@email.com', '2000-11-24', 'Newton, MA'),
 ('Valeria', 'Moreno', 'valeria.moreno@email.com', '1997-04-02', 'Cambridge, MA');
-
-
--- Requests (60 rows, OrganizerID 1–35, VenueID 1–35)
-INSERT INTO Requests (RequestName, Status, OrganizerID, VenueID) VALUES
-('Spring Jazz Booking', 'Approved', 1, 1),
-('Indie Rock Request', 'Approved', 2, 13),
-('Classical Gala Venue', 'Approved', 3, 3),
-('Food Festival Space', 'Approved', 4, 26),
-('Comedy Night Booking', 'Approved', 5, 15),
-('Hip-Hop Open Mic Space', 'Approved', 6, 10),
-('Art Walk Coordination', 'Approved', 7, 4),
-('Electronic Night DJ Venue', 'Approved', 8, 6),
-('Folk Festival Grounds', 'Approved', 9, 9),
-('Fitness Expo Hall', 'Approved', 10, 19),
-('R&B Night Lounge', 'Approved', 11, 18),
-('Film Screening Outdoor', 'Approved', 12, 26),
-('Afrobeats Party Venue', 'Approved', 13, 7),
-('Tech Meetup Space', 'Approved', 14, 30),
-('K-Pop Night Hall', 'Approved', 15, 2),
-('Blues Waterfront Stage', 'Approved', 16, 1),
-('Gallery Opening Space', 'Approved', 17, 6),
-('World Music Festival', 'Approved', 18, 28),
-('Comedy Lounge Booking', 'Approved', 19, 27),
-('Dance Showcase Stage', 'Approved', 20, 5),
-('Fenway Jazz Brunch', 'Approved', 21, 16),
-('Gospel Sunday Hall', 'Approved', 22, 34),
-('Latin Jazz Night', 'Approved', 23, 12),
-('Comedy Crawl Brighton', 'Approved', 24, 11),
-('Block Party Stage', 'Approved', 25, 8),
-('Acoustic Sessions Studio', 'Approved', 26, 25),
-('Celtic Night Venue', 'Approved', 27, 15),
-('Pop Showcase Hall', 'Approved', 28, 5),
-('Food Tour East Boston', 'Approved', 29, 29),
-('Art & Tech Fair Hall', 'Approved', 30, 20),
-('Reggae Beach Party', 'Approved', 31, 14),
-('North End Feast', 'Approved', 32, 32),
-('Indie Film Screening', 'Approved', 33, 31),
-('Fitness Park Event', 'Approved', 34, 26),
-('Jazz Walk Request', 'Approved', 35, 2),
-('Brookline Chamber Music', 'Pending', 1, 35),
-('Hip-Hop Battle Arena', 'Pending', 2, 10),
-('Soul Brunch Venue', 'Pending', 3, 18),
-('Pop-Up Market Grounds', 'Pending', 4, 9),
-('Rock Harbor Concert', 'Pending', 5, 1),
-('Late Night Jazz Request', 'Pending', 6, 27),
-('Spring Dance Festival', 'Pending', 7, 5),
-('Waterfront Film Night', 'Pending', 8, 26),
-('Blues Festival Request', 'Pending', 9, 17),
-('Comedy Festival Booking', 'Pending', 10, 15),
-('Acoustic Folk Night', 'Rejected', 11, 33),
-('Summer Music Series', 'Rejected', 12, 17),
-('Underground Electronic', 'Rejected', 13, 22),
-('Poetry Slam Night', 'Rejected', 14, 13),
-('DJ Battle Night', 'Rejected', 15, 8),
-('Art Installation', 'Rejected', 16, 6),
-('Open Mic Comedy', 'Pending', 17, 27),
-('Chamber Concert', 'Pending', 18, 35),
-('Rooftop Jazz', 'Pending', 19, 24),
-('Hip-Hop Cypher', 'Pending', 20, 28),
-('Indie Night', 'Pending', 21, 31),
-('Folk Revival', 'Pending', 22, 9),
-('Dance Pop Night', 'Pending', 23, 7),
-('Gospel Choir Showcase', 'Pending', 24, 34),
-('Latin Dance Night', 'Pending', 25, 12),
-('World Beat Festival', 'Pending', 26, 28);
 
 
 -- Hosts (40 rows — one venue per event)
@@ -648,3 +584,59 @@ INSERT INTO Review (Rating, Comment, Date, EventID, AttendeeID) VALUES
 (4.0,'Great vibes all night, crowd loved every song.','2026-04-15 11:00:00',15,5),
 (3.5,'Nice event, would have liked a bigger venue.','2026-04-15 12:00:00',15,25),
 (5.0,'Mind-blowing show, absolutely worth every penny.','2026-04-15 13:00:00',15,35);
+
+
+INSERT INTO Requests (RequestName, Status, Date, OrganizerID, VenueID) VALUES
+('Spring Jazz Booking', 'Approved', '2026-05-10', 1, 1),
+('Indie Rock Request', 'Approved', '2026-05-15', 2, 13),
+('Classical Gala Venue', 'Approved', '2026-05-20', 3, 3),
+('Food Festival Space', 'Approved', '2026-06-01', 4, 26),
+('Comedy Night Booking', 'Approved', '2026-06-05', 1, 15),
+('Blues Waterfront Stage', 'Approved', '2026-05-12', 16, 1), 
+('Brookline Chamber Music', 'Pending', '2026-05-18', 1, 35),
+('Hip-Hop Battle Arena', 'Pending', '2026-05-22', 2, 10),
+('Soul Brunch Venue', 'Pending', '2026-05-25', 3, 18),
+('Pop-Up Market Grounds', 'Pending', '2026-06-10', 4, 9),
+('Late Night Jazz Request', 'Pending', '2026-06-12', 6, 27),
+('Spring Dance Festival', 'Pending', '2026-06-15', 1, 5),
+('Waterfront Film Night', 'Pending', '2026-06-20', 8, 26),
+('Blues Festival Request', 'Pending', '2026-06-25', 9, 17),
+('Comedy Festival Booking', 'Pending', '2026-07-01', 10, 15),
+('Open Mic Comedy', 'Pending', '2026-07-05', 17, 27),
+('Chamber Concert', 'Pending', '2026-07-10', 18, 35),
+('Rooftop Jazz', 'Pending', '2026-07-15', 19, 24),
+('Hip-Hop Cypher', 'Pending', '2026-07-20', 20, 28),
+('Rock Harbor Concert', 'Pending', '2026-05-12', 3, 1), 
+('Indie Jam Session', 'Pending', '2026-05-15', 4, 1),
+('Classical Brunch', 'Pending', '2026-05-18', 5, 1),
+('Hip Hop Battle', 'Pending', '2026-05-20', 6, 1),
+('Soul Session', 'Pending', '2026-05-22', 7, 1),
+('Pop-Up Art Market', 'Pending', '2026-05-25', 8, 1),
+('Late Night Comedy', 'Pending', '2026-05-28', 9, 1),
+('Local Tech Talk', 'Pending', '2026-06-05', 12, 1),
+('Photography Gallery', 'Pending', '2026-06-08', 13, 1),
+('Latin Dance Night', 'Pending', '2026-06-21', 3, 1),
+('World Beat Festival', 'Pending', '2026-06-24', 4, 1),
+('Poetry Slam', 'Pending', '2026-06-27', 5, 1),
+('EDM Glow Party', 'Pending', '2026-06-30', 6, 1);
+
+-- Hosts table mapping
+INSERT INTO Hosts (VenueID, EventID) VALUES
+(1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
+(2, 6), (2, 7), (3, 8), (4, 9), (5, 10),
+(6, 11), (7, 12), (8, 13), (9, 14), (10, 15),
+(11, 16), (12, 17), (13, 18), (14, 19), (15, 20),
+(1, 21), (1, 22);
+
+-- Received Booking Table
+INSERT INTO RecievedBooking (OrganizerID, RequestDate, Compensation) VALUES
+(1, '2026-03-01', 500.00), (2, '2026-03-01', 450.00),
+(3, '2026-03-08', 1200.00), (4, '2026-03-08', 300.00),
+(5, '2026-03-15', 800.00), (6, '2026-03-15', 950.00),
+(7, '2026-03-22', 1100.00), (8, '2026-03-22', 200.00),
+(9, '2026-03-29', 1500.00), (10, '2026-03-29', 600.00),
+(11, '2026-04-05', 400.00), (12, '2026-04-05', 850.00),
+(13, '2026-04-12', 1300.00), (14, '2026-04-12', 700.00),
+(15, '2026-04-19', 900.00), (16, '2026-04-19', 1000.00),
+(17, '2026-04-26', 1150.00), (18, '2026-04-26', 550.00),
+(19, '2026-05-01', 1400.00), (20, '2026-05-01', 800.00);

@@ -10,9 +10,7 @@ import streamlit as st
 def home_nav():
     st.sidebar.page_link("Home.py", label="Home", icon="🏠")
 
-
-def about_page_nav():
-    st.sidebar.page_link("pages/30_About.py", label="About", icon="🧠")
+    st.sidebar.page_link("pages/owner.py", label="Venue Dashboard", icon="🏢")
 
 
 
@@ -115,11 +113,4 @@ def SideBarLinks(show_home=False):
         #if st.session_state["role"] == "venue_owner":
          
 
-    # About link appears at the bottom for all roles
-    about_page_nav()
-
-    if st.session_state["authenticated"]:
-        if st.sidebar.button("Logout"):
-            del st.session_state["role"]
-            del st.session_state["authenticated"]
-            st.switch_page("Home.py")
+    # About link appears at the bottom for all ro
