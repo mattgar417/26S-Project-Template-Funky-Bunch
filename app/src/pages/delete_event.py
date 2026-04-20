@@ -6,6 +6,15 @@ st.set_page_config(layout='wide')
 
 SideBarLinks()
 
+if "reset_form" not in st.session_state:
+    st.session_state.reset_form = False
+if "form_key_counter" not in st.session_state:
+    st.session_state.form_key_counter = 0
+if "show_success_modal" not in st.session_state:
+    st.session_state.show_success_modal = False
+if "success_event_name" not in st.session_state:
+    st.session_state.success_event_name = ""
+
 st.title("Delete Event")
 
 @st.dialog("Success")
@@ -17,20 +26,29 @@ def show_success_dialog(event_name):
         st.session_state.success_event_name = ""
         st.rerun()
 
-API_URL = f"http://api:4000/events/{st.session_state.event_id}"
+API_URL = f"http://api:4000/events"
+organizer_id = st.session_state.get("organizer_id", 1)
 
-event_id = st.number_input("Enter Event ID to Delete", min_value=1, step=1)
+event_name = st.text_input("Enter Event Name to Delete")
 fetch_clicked = st.button("Fetch Event Details")
 
 if fetch_clicked:
     try:
-        response = requests.get(f"{API_URL}/{event_id}")
+        response = requests.get(f"{API_URL}/organizer/organizers/{organizer_id}/events")
         if response.status_code == 200:
-            st.session_state.fetched_event = response.json()
-            st.success("Event found! Review the details below before deleting.")
-        else:
-            st.error("Event not found. Please check the ID and try again.")
-            st.session_state.fetched_event = None
+            events = response.json()
+            match = next(
+                (e for e in events if e.get("Name", "").lower() == event_name.strip().lower()),
+                None
+            )
+            if match:
+                st.session_state.fetched_event = match
+                st.session_state.fetched_event_id = match.get("EventID")
+                st.success(f"Event found! You may now edit the fields below.")
+            else:
+                st.error("No event found with that name. Please check and try again.")
+                st.session_state.fetched_event = None
+                st.session_state.fetched_event_id = None
     except requests.exceptions.RequestException as e:
         st.error(f"Error connecting to the API: {str(e)}")
         st.session_state.fetched_event = None
@@ -51,6 +69,8 @@ if event:
 
     # Two-step confirmation to prevent accidental deletion
     confirm = st.checkbox("I understand this event will be permanently deleted.")
+
+    event_id = st.session_state.fetched_event_id
 
     if st.button("Delete Event", disabled=not confirm, type="primary"):
         try:

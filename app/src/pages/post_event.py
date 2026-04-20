@@ -53,12 +53,12 @@ with st.form(f"add_event_form_{st.session_state.form_key_counter}"):
             st.error("Please fill in all required fields marked with *")
         else:
             event_data = {
-                "Name": name,
-                "Date": date,
-                "Location": location,
-                "Description": description,
-                "Size": size,
-                "Category": category
+                "name": name,
+                "date": date,
+                "location": location,
+                "description": description,
+                "size": size,
+                "category": category
             }
 
             try:

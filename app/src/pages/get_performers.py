@@ -8,7 +8,9 @@ SideBarLinks()
 
 st.title("Performer Directory")
 
-API_URL = f"http://api:4000/organizers/{st.session_state.organizer_id}/performer-bookings"
+organizer_id = st.session_state.get("organizer_id", 1)
+
+API_URL = f"http://api:4000/performer/performers"
 
 response = requests.get(API_URL)
 if response.status_code == 200:

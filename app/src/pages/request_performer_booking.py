@@ -6,6 +6,15 @@ st.set_page_config(layout='wide')
 
 SideBarLinks()
 
+if "reset_form" not in st.session_state:
+    st.session_state.reset_form = False
+if "form_key_counter" not in st.session_state:
+    st.session_state.form_key_counter = 0
+if "show_success_modal" not in st.session_state:
+    st.session_state.show_success_modal = False
+if "success_event_name" not in st.session_state:
+    st.session_state.success_event_name = ""
+
 st.title("Add New Request")
 
 @st.dialog("Success")
@@ -22,7 +31,8 @@ if st.session_state.reset_form:
     st.session_state.form_key_counter += 1
     st.session_state.reset_form = False
 
-API_URL = f"http://api:4000/organizers/{st.session_state.organizer_id}/performer-bookings"
+organizer_id = st.session_state.get("organizer_id", 1)
+API_URL = f"http://api:4000/organizers/{organizer_id}/performer-bookings"
 
 with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
     st.subheader("Request Information")

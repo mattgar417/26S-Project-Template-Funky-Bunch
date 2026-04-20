@@ -8,7 +8,7 @@ SideBarLinks()
 
 st.title("Venue Directory")
 
-API_URL = f"http://api:4000/organizers/{st.session_state.organizer_id}/venue-requests"
+API_URL = f"http://api:4000/venue/venues"
 
 response = requests.get(API_URL)
 if response.status_code == 200:
