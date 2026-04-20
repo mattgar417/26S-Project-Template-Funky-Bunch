@@ -6,6 +6,17 @@ st.set_page_config(layout='wide')
 
 SideBarLinks()
 
+if "reset_form" not in st.session_state:
+    st.session_state.reset_form = False
+if "form_key_counter" not in st.session_state:
+    st.session_state.form_key_counter = 0
+if "show_success_modal" not in st.session_state:
+    st.session_state.show_success_modal = False
+if "success_event_name" not in st.session_state:
+    st.session_state.success_event_name = ""
+
+organizer_id = st.session_state.get("organizer_id", 1)
+
 st.title("Add New Event")
 
 @st.dialog("Success")
@@ -22,7 +33,7 @@ if st.session_state.reset_form:
     st.session_state.form_key_counter += 1
     st.session_state.reset_form = False
 
-API_URL = f"http://api:4000/events/{st.session_state.event_id}"
+API_URL = f"http://web-api:4000/organizer/organizers/{organizer_id}/events"
 
 with st.form(f"add_event_form_{st.session_state.form_key_counter}"):
     st.subheader("Event Information")
