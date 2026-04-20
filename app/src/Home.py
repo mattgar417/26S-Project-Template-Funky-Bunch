@@ -46,4 +46,4 @@ if st.button('Act as Caleb, a performer',
     st.session_state['authenticated'] = True
     st.session_state['role'] = 'performer'
     st.session_state['first_name'] = 'Mohammad'
-    st.switch_page('pages/performer.py')
+    st.switch_page('pages/40_performer_home.py')
