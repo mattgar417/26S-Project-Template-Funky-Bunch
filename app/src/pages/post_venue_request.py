@@ -60,28 +60,28 @@ with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
                         venue_id = match.get("VenueID")
                         st.success(f"Venue found! Request is being processed.")
 
+                        request_data = {
+                            "request_name": name,
+                            "venue_id": venue_id
+                        }
+
+                        st.session_state.success_venue_name = name
+
+                        response = requests.post(f"{API_URL}/organizer/organizers/{organizer_id}/venue-requests", json=request_data)
+
+                        if response.status_code == 201:
+                            st.session_state.show_success_modal = True
+                            st.session_state.success_ngo_name = name
+                            st.rerun()
+                        else:
+                            st.error(
+                                f"Failed to add request: {response.json().get('error', 'Unknown error')}"
+                            )
+
                     else:
                         st.error("No venue found with that name. Please check and try again.")
                         st.session_state.fetched_event = None
                         st.session_state.fetched_event_id = None
-
-                request_data = {
-                    "request_name": name,
-                    "venue_id": venue_id
-                }
-
-                st.session_state.success_venue_name = name
-
-                response = requests.post(f"{API_URL}/organizer/organizers/{organizer_id}/venue-requests", json=request_data)
-
-                if response.status_code == 201:
-                    st.session_state.show_success_modal = True
-                    st.session_state.success_ngo_name = name
-                    st.rerun()
-                else:
-                    st.error(
-                        f"Failed to add request: {response.json().get('error', 'Unknown error')}"
-                    )
 
             except requests.exceptions.RequestException as e:
                 st.error(f"Error connecting to the API: {str(e)}")
