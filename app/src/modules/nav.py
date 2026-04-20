@@ -100,14 +100,14 @@ def update_event_nav():
 def delete_event_nav():
     st.sidebar.page_link("pages/delete_event.py", label="Delete Event", icon="🗑️")
 
-def get_event_matches_nav():
-    st.sidebar.page_link("pages/get_event_matches.py", label="Event Matches", icon="🔗")
+def get_events_nav():
+    st.sidebar.page_link("pages/get_events.py", label="View Your Events", icon="🔎")
 
 def get_performers_nav():
     st.sidebar.page_link("pages/get_performers.py", label="Browse Performers", icon="🎭")
 
-def request_performer_booking_nav():
-    st.sidebar.page_link("pages/request_performer_booking.py", label="Book Performer", icon="📩")
+def get_venues_organizer_nav():
+    st.sidebar.page_link("pages/get_venues.py", label="Browse Venues", icon="🏟️")
 
 
 # ---- Role: Venue Owner ------------------------------------------------
@@ -174,9 +174,9 @@ def SideBarLinks(show_home=False):
             post_event_nav()
             update_event_nav()
             delete_event_nav()
-            get_event_matches_nav()
+            get_events_nav()
             get_performers_nav()
-            request_performer_booking_nav()
+            get_venues_organizer_nav()
 
         if st.session_state["role"] == "venue_owner":
             venue_owner_home_nav()
