@@ -5,6 +5,21 @@ from mysql.connector import Error
 # Create a Blueprint for Owner routes
 owner_routes = Blueprint("owner_routes", __name__)
 
+# GET /owner/owners
+# Returns all owners for the login selector
+@owner_routes.route("/owners", methods=["GET"])
+def get_all_owners():
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT OwnerID, FName, LName FROM Owner ORDER BY FName, LName")
+        owners = cursor.fetchall()
+        return jsonify(owners), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_owners: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
 # Returns a list of all event requests with details so the owner can make informed decisions [Jason-1]
 @owner_routes.route("/owners/<int:owner_id>/requests", methods=["GET"])
 def get_owner_requests(owner_id):

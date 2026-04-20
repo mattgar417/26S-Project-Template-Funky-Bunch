@@ -4,6 +4,21 @@ from mysql.connector import Error
 
 organizer_routes = Blueprint("organizer_routes", __name__)
 
+# GET /organizer/organizers
+# Returns all organizers for the login selector
+@organizer_routes.route("/organizers", methods=["GET"])
+def get_all_organizers():
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT OrganizerID, FName, LName FROM Organizer ORDER BY FName, LName")
+        organizers = cursor.fetchall()
+        return jsonify(organizers), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_organizers: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
 # GET /organizer/organizers/<id>
 # Return organizer profile with reliability stats
 @organizer_routes.route("/organizers/<int:organizer_id>", methods=["GET"])
