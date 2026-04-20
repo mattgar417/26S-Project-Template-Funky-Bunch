@@ -20,9 +20,9 @@ st.title("Update Event")
 @st.dialog("Success")
 def show_success_dialog(event_name):
     st.markdown(f"### {event_name} has been updated!")
+    st.session_state.show_success_modal = False
     
     if st.button("Update Event Again", use_container_width=True):
-            st.session_state.show_success_modal = False
             st.session_state.success_event_name = ""
             st.session_state.reset_form = True
             st.rerun()
@@ -32,14 +32,14 @@ if st.session_state.reset_form:
     st.session_state.reset_form = False
 
 API_URL = f"http://api:4000"
-organizer_id = st.session_state.get("organizer_id", 1)
+organizer_id = st.session_state.get("organizer_id", 4)
 
 event_name = st.text_input("Enter Event Name to Update")
 fetch_clicked = st.button("Fetch Event Details")
 
 if fetch_clicked:
     try:
-        response = requests.get(f"{API_URL}/organizer/organizers/{organizer_id}/events")
+        response = requests.get(f"{API_URL}/event/events")
         if response.status_code == 200:
             events = response.json()
             match = next(
@@ -61,7 +61,7 @@ if fetch_clicked:
 event = st.session_state.get("fetched_event") or {}
 
 with st.form(f"add_event_form_{st.session_state.form_key_counter}"):
-    st.subheader("New Event Information")
+    st.subheader("Updated Event Information")
 
     # Required fields
     name = st.text_input("New Name")
@@ -78,19 +78,22 @@ with st.form(f"add_event_form_{st.session_state.form_key_counter}"):
             st.error("Please fill in all required fields")
         else:
             event_data = {
-                "name": name,
-                "date": date,
-                "location": location,
-                "description": description,
-                "size": size,
-                "category": category
+                "Name": name,
+                "Date": date,
+                "Location": location,
+                "Description": description,
+                "Size": size,
+                "Category": category
             }
             event_id = st.session_state.fetched_event_id
 
             try:
                 response = requests.put(f"{API_URL}/event/events/{event_id}", json=event_data)
 
-                if response.status_code == 201:
+                st.write("Status code:", response.status_code)
+                st.write("Response body:", response.json())
+
+                if response.status_code == 200:
                     st.session_state.show_success_modal = True
                     st.session_state.success_ngo_name = name
                     st.rerun()

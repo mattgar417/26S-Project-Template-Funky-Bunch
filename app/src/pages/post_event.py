@@ -15,16 +15,16 @@ if "show_success_modal" not in st.session_state:
 if "success_event_name" not in st.session_state:
     st.session_state.success_event_name = ""
 
-organizer_id = st.session_state.get("organizer_id", 1)
+organizer_id = st.session_state.get("organizer_id", 4)
 
 st.title("Add New Event")
 
 @st.dialog("Success")
 def show_success_dialog(event_name):
     st.markdown(f"### {event_name} has been successfully added to the system!")
+    st.session_state.show_success_modal = False
     
     if st.button("Add Another Event", use_container_width=True):
-            st.session_state.show_success_modal = False
             st.session_state.success_event_name = ""
             st.session_state.reset_form = True
             st.rerun()
@@ -33,7 +33,7 @@ if st.session_state.reset_form:
     st.session_state.form_key_counter += 1
     st.session_state.reset_form = False
 
-API_URL = f"http://web-api:4000/organizer/organizers/{organizer_id}/events"
+API_URL = f"http://web-api:4000/event/events"
 
 with st.form(f"add_event_form_{st.session_state.form_key_counter}"):
     st.subheader("Event Information")
@@ -60,6 +60,8 @@ with st.form(f"add_event_form_{st.session_state.form_key_counter}"):
                 "size": size,
                 "category": category
             }
+
+            st.session_state.success_event_name = name
 
             try:
                 response = requests.post(API_URL, json=event_data)

@@ -20,13 +20,13 @@ st.title("Delete Event")
 @st.dialog("Success")
 def show_success_dialog(event_name):
     st.markdown(f"### {event_name} has been successfully deleted!")
+    st.session_state.show_success_modal = False
 
     if st.button("Close", use_container_width=True):
-        st.session_state.show_success_modal = False
         st.session_state.success_event_name = ""
         st.rerun()
 
-API_URL = f"http://api:4000/events"
+API_URL = f"http://api:4000"
 organizer_id = st.session_state.get("organizer_id", 1)
 
 event_name = st.text_input("Enter Event Name to Delete")
@@ -34,7 +34,7 @@ fetch_clicked = st.button("Fetch Event Details")
 
 if fetch_clicked:
     try:
-        response = requests.get(f"{API_URL}/organizer/organizers/{organizer_id}/events")
+        response = requests.get(f"{API_URL}/event/events")
         if response.status_code == 200:
             events = response.json()
             match = next(
@@ -45,6 +45,7 @@ if fetch_clicked:
                 st.session_state.fetched_event = match
                 st.session_state.fetched_event_id = match.get("EventID")
                 st.success(f"Event found! You may now edit the fields below.")
+
             else:
                 st.error("No event found with that name. Please check and try again.")
                 st.session_state.fetched_event = None
@@ -53,7 +54,7 @@ if fetch_clicked:
         st.error(f"Error connecting to the API: {str(e)}")
         st.session_state.fetched_event = None
 
-event = st.session_state.get("fetched_event")
+event = st.session_state.get("fetched_event") or {}
 
 # --- Display event details for review ---
 if event:
@@ -74,7 +75,7 @@ if event:
 
     if st.button("Delete Event", disabled=not confirm, type="primary"):
         try:
-            response = requests.delete(f"{API_URL}/{event_id}")
+            response = requests.delete(f"{API_URL}/event/events/{event_id}")
 
             if response.status_code == 200:
                 st.session_state.show_success_modal = True
