@@ -34,6 +34,9 @@ with col1:
     attendee_map = {f"{a['FName']} {a['LName']}": a for a in attendees}
     selected = st.selectbox('Select an attendee', list(attendee_map.keys()), key='sel_attendee')
     if st.button('Log in as Attendee', type='primary', use_container_width=True):
+        if not selected:
+            st.error('Please select an attendee first.')
+            st.stop()
         user = attendee_map[selected]
         st.session_state['authenticated'] = True
         st.session_state['role'] = 'attendee'
@@ -49,6 +52,9 @@ with col2:
     owner_map = {f"{o['FName']} {o['LName']}": o for o in owners}
     selected = st.selectbox('Select a venue owner', list(owner_map.keys()), key='sel_owner')
     if st.button('Log in as Venue Owner', type='primary', use_container_width=True):
+        if not selected:
+            st.error('Please select a venue owner first.')
+            st.stop()
         user = owner_map[selected]
         st.session_state['authenticated'] = True
         st.session_state['role'] = 'venue_owner'
@@ -66,6 +72,9 @@ with col3:
     organizer_map = {f"{o['FName']} {o['LName']}": o for o in organizers}
     selected = st.selectbox('Select an organizer', list(organizer_map.keys()), key='sel_organizer')
     if st.button('Log in as Organizer', type='primary', use_container_width=True):
+        if not selected:
+            st.error('Please select an organizer first.')
+            st.stop()
         user = organizer_map[selected]
         st.session_state['authenticated'] = True
         st.session_state['role'] = 'organizer'
@@ -81,6 +90,9 @@ with col4:
     performer_map = {f"{p['FName']} {p['LName']}": p for p in performers}
     selected = st.selectbox('Select a performer', list(performer_map.keys()), key='sel_performer')
     if st.button('Log in as Performer', type='primary', use_container_width=True):
+        if not selected:
+            st.error('Please select a performer first.')
+            st.stop()
         user = performer_map[selected]
         st.session_state['authenticated'] = True
         st.session_state['role'] = 'performer'
