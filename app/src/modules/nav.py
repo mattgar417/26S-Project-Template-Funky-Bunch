@@ -65,6 +65,9 @@ def view_attendee_events_nav():
 def view_events_list_nav():
     st.sidebar.page_link("pages/view_events_list.py", label="Saved Events", icon="⭐")
 
+def view_event_reviews_nav():
+    st.sidebar.page_link("pages/view_event_reviews.py", label="Reviews", icon="✍️")
+
 #---- Role: performer ------------------------------------------------
 
 def performer_home_nav():
@@ -157,6 +160,7 @@ def SideBarLinks(show_home=False):
             view_feed_nav()
             view_attendee_events_nav()
             view_events_list_nav()
+            view_event_reviews_nav()
            
         if st.session_state["role"] == "performer":
             performer_home_nav()
