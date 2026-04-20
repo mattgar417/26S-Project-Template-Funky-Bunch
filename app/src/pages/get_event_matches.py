@@ -6,57 +6,58 @@ st.set_page_config(layout='wide')
 
 SideBarLinks()
 
-st.title("Attendees that Match with Your Event")
+st.title("Attendees That Match Your Event")
 
-API_URL = f"http://api:4000/events/{st.session_state.event_id}/"
+organizer_id = st.session_state.get('user_id', 1)
 
-response = requests.get(API_URL)
+# Fetch organizer's events
+events_res = requests.get(
+    f"http://web-api:4000/organizer/organizers/{organizer_id}/events", timeout=5
+)
+if events_res.status_code != 200:
+    st.error("Could not load your events.")
+    st.stop()
 
-if response.status_code == 200:
-    matches = response.json()
+events = events_res.json()
+if not events:
+    st.info("You have no events yet. Post an event first.")
+    st.stop()
 
-    if not matches:
-        st.info("No attendees have matched with your events yet.")
-        st.stop()
+event_options = {f"{e['Name']} (ID {e['EventID']})": e['EventID'] for e in events}
+selected_label = st.selectbox("Select an event", list(event_options.keys()))
+event_id = event_options[selected_label]
 
-    events = sorted(list(set(match["Event_Name"] for match in matches)))
-    skills = sorted(list(set(match["Skill"] for match in matches)))
-    statuses = sorted(list(set(match["Status"] for match in matches)))
+tab1, tab2 = st.tabs(["Matched Attendees (by Interest)", "Confirmed RSVPs"])
 
-    col1, col2, col3 = st.columns(3)
+with tab1:
+    st.subheader("Attendees whose interests match this event's category")
+    res = requests.get(
+        f"http://web-api:4000/event/events/{event_id}/matched-users", timeout=5
+    )
+    if res.status_code == 200:
+        matches = res.json()
+        if matches:
+            st.write(f"Found **{len(matches)}** matched attendee(s)")
+            for m in matches:
+                with st.expander(f"{m['FName']} {m['LName']}"):
+                    st.write(f"**Email:** {m.get('Email', 'N/A')}")
+                    st.write(f"**Matching Interests:** {m.get('MatchingInterests', 0)}")
+        else:
+            st.info("No attendees matched by interest for this event.")
+    else:
+        st.error("Could not load matched attendees.")
 
-    with col1:
-        selected_event = st.selectbox("Filter by Event", ["All"] + events)
-    with col2:
-        selected_skill = st.selectbox("Filter by Skill", ["All"] + skills)
-    with col3:
-        selected_status = st.selectbox("Filter by Status", ["All"] + statuses)
-
-    filtered_matches = matches
-    if selected_event != "All":
-        filtered_matches = [m for m in filtered_matches if m["Event_Name"] == selected_event]
-    if selected_skill != "All":
-        filtered_matches = [m for m in filtered_matches if m["Skill"] == selected_skill]
-    if selected_status != "All":
-        filtered_matches = [m for m in filtered_matches if m["Status"] == selected_status]
-
-    st.write(f"Found **{len(filtered_matches)}** matched attendee(s)")
-
-    for match in filtered_matches:
-        with st.expander(f"{match['Attendee_Name']} → {match['Event_Name']}"):
-            info_col, event_col = st.columns(2)
-
-            with info_col:
-                st.write("**Attendee Information**")
-                st.write(f"**Name:** {match['Attendee_Name']}")
-                st.write(f"**Email:** {match['Email']}")
-                st.write(f"**Skill:** {match['Skill']}")
-
-            with event_col:
-                st.write("**Event Information**")
-                st.write(f"**Event:** {match['Event_Name']}")
-                st.write(f"**Date:** {match['Event_Date']}")
-                st.write(f"**Status:** {match['Status']}")
-
-else:
-    st.error("Failed to fetch matched attendees from the API.")
+with tab2:
+    st.subheader("Confirmed RSVPs for this event")
+    res2 = requests.get(
+        f"http://web-api:4000/event/events/{event_id}/attendees", timeout=5
+    )
+    if res2.status_code == 200:
+        data = res2.json()
+        attendees = data.get('attendees', [])
+        total = data.get('total', 0)
+        st.metric("Confirmed Attendees", total)
+        for a in attendees:
+            st.write(f"- **{a['FName']} {a['LName']}** ({a.get('Email', '')})")
+    else:
+        st.error("Could not load RSVPs.")
