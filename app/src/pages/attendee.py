@@ -31,3 +31,8 @@ if st.button('Look at saved event list',
              type='primary',
              use_container_width=True):
     st.switch_page('pages/view_events_list.py')
+
+if st.button('Rate & Review Events',
+             type='primary',
+             use_container_width=True):
+    st.switch_page('pages/view_event_reviews.py')
