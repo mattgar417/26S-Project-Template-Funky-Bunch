@@ -2,125 +2,64 @@ from flask import Blueprint, jsonify, request, current_app
 from backend.db_connection import get_db
 from mysql.connector import Error
 
-# Create a Blueprint for Owner routes
-owner_routes = Blueprint("owner_routes", __name__)
+# Create a Blueprint for Venue routes
+venue_routes = Blueprint("venue_routes", __name__)
 
-# Returns a list of all event requests with details so the owner can make informed decisions [Jason-1]
-@owner_routes.route("/owners/<int:owner_id>/requests", methods=["GET"])
-def get_owner_requests(owner_id):
+# --- 1. GET ALL VENUES ---
+# Returns all venues and their owner details for administrative overview
+@venue_routes.route("/venues", methods=["GET"])
+def get_venues():
     cursor = get_db().cursor(dictionary=True)
     try:
         query = """
-            SELECT 
-                r.RequestID, 
-                r.RequestName, 
-                r.Status, 
-                e.Date, 
-                e.Size, 
-                o.FName AS OrganizerFirstName, 
+            SELECT v.*, o.FName AS OwnerFirstName 
+            FROM Venue v 
+            JOIN Owner o ON v.OwnerID = o.OwnerID
+        """
+        cursor.execute(query)
+        venues = cursor.fetchall()
+        return jsonify(venues), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in get_venues: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# --- 2. GET ALL REQUESTS FOR A SPECIFIC VENUE ---
+# Returns booking requests for a specific venue [Jason-1]
+@venue_routes.route("/venues/<int:venue_id>/requests", methods=["GET"])
+def get_venue_requests(venue_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        query = """
+            SELECT
+                r.RequestID,
+                r.RequestName,
+                r.Status,
+                r.Date,
+                o.OrganizerID,
+                o.FName AS OrganizerFirstName,
                 o.LName AS OrganizerLastName
             FROM Requests r
             JOIN Organizer o ON r.OrganizerID = o.OrganizerID
-            LEFT JOIN Event e ON r.RequestName LIKE CONCAT('%%', e.Name, '%%')
-            JOIN Venue v ON r.VenueID = v.VenueID
-            WHERE v.OwnerID = %s
-        """
-        cursor.execute(query, (owner_id,))
-        requests = cursor.fetchall()
-        return jsonify(requests), 200
-    except Error as e:
-        current_app.logger.error(f'Database error in get_owner_requests: {e}')
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
-# GET /owners/<id>/calendar
-# Returns a calendar view of bookings to avoid conflicts [Jason-2]
-@owner_routes.route("/owners/<int:owner_id>/calendar", methods=["GET"])
-def get_owner_calendar(owner_id):
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        query = """
-            SELECT 
-                e.EventID, 
-                e.Name, 
-                e.Date, 
-                v.Name AS VenueName
-            FROM Hosts h
-            JOIN Event e ON h.EventID = e.EventID
-            JOIN Venue v ON h.VenueID = v.VenueID
-            WHERE v.OwnerID = %s
-            ORDER BY e.Date ASC
-        """
-        cursor.execute(query, (owner_id,))
-        calendar_events = cursor.fetchall()
-        return jsonify(calendar_events), 200
-    except Error as e:
-        current_app.logger.error(f'Database error in get_owner_calendar: {e}')
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
-# GET /venues/<id>/recommendations
-# Returns event recommendations that fit venue size and type to increase bookings [Jason-3]
-@owner_routes.route("/venues/<int:venue_id>/recommendations", methods=["GET"])
-def get_venue_recommendations(venue_id):
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        query = """
-            SELECT 
-                e.EventID, 
-                e.Name, 
-                e.Size, 
-                e.Category, 
-                v.Capacity
-            FROM Event e
-            JOIN Venue v ON v.VenueID = %s
-            WHERE e.Size <= v.Capacity
-            ORDER BY e.Size DESC
+            WHERE r.VenueID = %s
+            ORDER BY r.RequestID DESC
         """
         cursor.execute(query, (venue_id,))
-        recommendations = cursor.fetchall()
-        return jsonify(recommendations), 200
+        requests_data = cursor.fetchall()
+        return jsonify(requests_data), 200
     except Error as e:
-        current_app.logger.error(f'Database error in get_venue_recommendations: {e}')
+        current_app.logger.error(f'Database error in get_venue_requests: {e}')
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
 
-# GET /owners/organizers/profiles
-# Allows venue owners to review organizer profiles to ensure reliability [Jason-4]
-@owner_routes.route("/owners/organizers/profiles", methods=["GET"])
-def get_organizer_profiles():
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        query = """
-            SELECT 
-                o.OrganizerID, 
-                o.FName, 
-                o.LName, 
-                o.Email, 
-                o.Location,
-                COUNT(r.RequestID) AS TotalRequests,
-                SUM(CASE WHEN r.Status = 'Approved' THEN 1 ELSE 0 END) AS ApprovedRequests
-            FROM Organizer o
-            LEFT JOIN Requests r ON o.OrganizerID = r.OrganizerID
-            GROUP BY o.OrganizerID
-        """
-        cursor.execute(query)
-        profiles = cursor.fetchall()
-        return jsonify(profiles), 200
-    except Error as e:
-        current_app.logger.error(f'Database error in get_organizer_profiles: {e}')
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
-# PUT /requests/<id>/status
-# Easy approval/rejection system for booking requests [Jason-5]
-@owner_routes.route("/requests/<int:request_id>/status", methods=["PUT"])
-def update_request_status(request_id):
-    cursor = get_db().cursor()
+# --- 3. UPDATE REQUEST STATUS ---
+# Allows for the approval or rejection of specific venue requests [Jason-5]
+@venue_routes.route("/venues/<int:venue_id>/requests/<int:request_id>", methods=["PUT"])
+def update_venue_request_status(venue_id, request_id):
+    db = get_db()
+    cursor = db.cursor()
     try:
         data = request.get_json()
         status = data.get("status")
@@ -128,36 +67,91 @@ def update_request_status(request_id):
         if not status:
             return jsonify({"error": "Status is required"}), 400
 
-        cursor.execute("UPDATE Requests SET Status = %s WHERE RequestID = %s", (status, request_id))
-        get_db().commit()
+        query = "UPDATE Requests SET Status = %s WHERE RequestID = %s AND VenueID = %s"
+        cursor.execute(query, (status, request_id, venue_id))
+        db.commit() 
         return jsonify({"message": "Request status updated successfully"}), 200
     except Error as e:
-        current_app.logger.error(f'Database error in update_request_status: {e}')
+        current_app.logger.error(f'Database error in update_venue_request_status: {e}')
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
 
-# GET /owners/<id>/revenue
-# Tracks weekly earnings and revenue trends to understand business performance [Jason-6]
-@owner_routes.route("/owners/<int:owner_id>/revenue", methods=["GET"])
-def get_owner_revenue(owner_id):
+# --- 4. VENUE CALENDAR ---
+# Returns a schedule of events hosted at the venue to prevent double-booking [Jason-2]
+@venue_routes.route("/venues/<int:venue_id>/calendar", methods=["GET"])
+def get_venue_calendar(venue_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        query = """
+            SELECT e.Name, e.Date 
+            FROM Hosts h 
+            JOIN Event e ON h.EventID = e.EventID 
+            WHERE h.VenueID = %s
+            ORDER BY e.Date ASC
+        """
+        cursor.execute(query, (venue_id,))
+        calendar_data = cursor.fetchall()
+        return jsonify(calendar_data), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in get_venue_calendar: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# --- 5. VENUE REVENUE ---
+# Calculates revenue trends for the venue based on approved bookings [Jason-6]
+@venue_routes.route("/venues/<int:venue_id>/revenue", methods=["GET"])
+def get_venue_revenue(venue_id):
     cursor = get_db().cursor(dictionary=True)
     try:
         query = """
             SELECT 
-                YEAR(rb.RequestDate) AS Year,
-                WEEK(rb.RequestDate) AS Week,
-                SUM(rb.Compensation) AS WeeklyRevenue
-            FROM RecievedBooking rb
-            JOIN Venue v ON v.OwnerID = %s
-            GROUP BY Year, Week
-            ORDER BY Year, Week
+                DATE_FORMAT(Date, '%Y-%m-%d') as week, 
+                COUNT(RequestID) * 500 as amount
+            FROM Requests 
+            WHERE VenueID = %s AND Status = 'Approved'
+            GROUP BY week 
+            ORDER BY week ASC
         """
-        cursor.execute(query, (owner_id,))
-        revenue = cursor.fetchall()
-        return jsonify(revenue), 200
+        cursor.execute(query, (venue_id,))
+        revenue_data = cursor.fetchall()
+        return jsonify(revenue_data), 200
     except Error as e:
-        current_app.logger.error(f'Database error in get_owner_revenue: {e}')
+        current_app.logger.error(f'Database error in get_venue_revenue: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# --- 6. GET ORGANIZER HISTORY ---
+# Provides a profile and history of organizers to ensure reliability [Jason-4]
+@venue_routes.route("/organizers/<int:org_id>/history", methods=["GET"])
+def get_organizer_history(org_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        # Get Organizer profile info
+        cursor.execute("""
+            SELECT FName AS FirstName, LName AS LastName, Email 
+            FROM Organizer 
+            WHERE OrganizerID = %s
+        """, (org_id,))
+        organizer = cursor.fetchone()
+
+        # Get their request history
+        cursor.execute("""
+            SELECT RequestName, Status, Date 
+            FROM Requests 
+            WHERE OrganizerID = %s 
+            ORDER BY Date DESC
+        """, (org_id,))
+        history = cursor.fetchall()
+
+        return jsonify({
+            "organizer": organizer if organizer else {"FirstName": "Unknown", "LastName": "", "Email": "N/A"},
+            "history": history
+        }), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in get_organizer_history: {e}')
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
