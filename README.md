@@ -25,10 +25,6 @@ Finding and organizing local events is fragmented — people rely on Instagram, 
 
 Key features include an ML-powered interest-matching feed, a performer discovery system, and an end-to-end venue booking workflow.
 
-## Demo Video
-
-> [Link to demo video — add before submission]
-
 ## Tech Stack
 
 | Layer | Technology |
