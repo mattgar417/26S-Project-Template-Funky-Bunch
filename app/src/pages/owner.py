@@ -20,14 +20,16 @@ if st.button('View all events',
 if st.button('View all requests',
              type='primary',
              use_container_width=True):
-    st.switch_page('pages/view_requests.py')
+    st.switch_page('pages/view_request.py')
 
 if st.button('Look at your bookings calendar',
              type='primary',
              use_container_width=True):
-    st.switch_page('pages/view_bookings_calendar.py')
+    st.session_state['menu_choice'] = 'Venue Calendar'
+    st.switch_page('pages/venue_owner.py')
 
 if st.button('Look at your revenue',
              type='primary',
              use_container_width=True):
-    st.switch_page('pages/view_revenue.py')
+    st.session_state['menu_choice'] = 'Venue Revenue'
+    st.switch_page('pages/venue_owner.py')
