@@ -5,7 +5,7 @@ st.set_page_config(layout='wide')
 SideBarLinks()
 
 if st.button("Home"):
-    st.switch_page("Home")
+    st.switch_page("Home.py")
 
 st.title("About communevent")
 
