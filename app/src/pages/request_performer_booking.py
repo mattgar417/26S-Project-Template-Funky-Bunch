@@ -31,7 +31,6 @@ if st.session_state.reset_form:
     st.session_state.form_key_counter += 1
     st.session_state.reset_form = False
 
-organizer_id = st.session_state.get("organizer_id", 1)
 API_URL = f"http://api:4000"
 
 with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
@@ -72,7 +71,7 @@ with st.form(f"add_request_form_{st.session_state.form_key_counter}"):
 
                 st.session_state.success_performer_name = name
 
-                response = requests.post(f"{API_URL}/organizer/organizers/{organizer_id}/performer-bookings", json=request_data)
+                response = requests.post(f"{API_URL}/organizer/organizers/{st.session_state['user_id']}/performer-bookings", json=request_data)
 
                 if response.status_code == 201:
                     st.session_state.show_success_modal = True

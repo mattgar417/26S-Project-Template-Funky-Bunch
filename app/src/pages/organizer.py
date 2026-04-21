@@ -32,6 +32,11 @@ if st.button('Delete event',
              use_container_width=True):
     st.switch_page('pages/delete_event.py')
 
+if st.button('View attendees matching your events',
+             type='primary',
+             use_container_width=True):
+    st.switch_page('pages/get_event_matches.py')
+
 if st.button('View venues',
              type='primary',
              use_container_width=True):
