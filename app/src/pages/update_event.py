@@ -32,7 +32,6 @@ if st.session_state.reset_form:
     st.session_state.reset_form = False
 
 API_URL = f"http://api:4000"
-organizer_id = st.session_state.get("organizer_id", 4)
 
 event_name = st.text_input("Enter Event Name to Update")
 fetch_clicked = st.button("Fetch Event Details")

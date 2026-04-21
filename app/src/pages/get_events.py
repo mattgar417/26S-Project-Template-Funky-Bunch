@@ -8,9 +8,9 @@ SideBarLinks()
 
 st.title("Your Events")
 
-organizer_id = st.session_state.get("organizer_id", 1)
+st.write(f"Organizer ID: {st.session_state['user_id']}")
 
-API_URL = f"http://api:4000/organizer/organizers/{organizer_id}/events"
+API_URL = f"http://api:4000/organizer/organizers/{st.session_state['user_id']}/events"
 
 response = requests.get(API_URL)
 
